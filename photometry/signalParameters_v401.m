@@ -268,7 +268,7 @@ k =1;
             test_stats_pop(o).(test_fields{idx}).VALS = VALS;
             test_stats_pop(o).(test_fields{idx}).EPSI2 = E2;
             test_stats_pop(o).(test_fields{idx}).ETA2 = ETA2;
-            final_out(:,k)=MCT(:,end);
+            final_out{o}(:,idx)=MCT(:,end);
         end
         k = k+1;
        
