@@ -1,4 +1,4 @@
-function [test_out,test_stats_pop,final_out] = signalParameters(data_in, meta_in)
+function [test_out,test_stats_pop,final_out] = signalParameters_v401(data_in, meta_in)
 
 win1 = ceil(5*1017.3/64);
 win2 = ceil(17.5*1017.3/64);
@@ -24,13 +24,13 @@ devp_auc_cum_pt_in=cell(1,4);
 testlist = {}; t_id = 1;
 % set(0,'DefaultFigureVisible','off')
 slope_win = ceil(6*1017.3/64);
-mps = 0.2; 
+mps = 0.15; 
 test_type = 'lsd';
 out_comp = [1 3 4];
 gsize = [8 4 7 6];
 outcomes = {'Correct' 'Incorrect' 'Omission' 'Premature'};
 plot_lims = [-0.25 0.75; 0 5*15.89; 0 10*15.89; 0 12];
-final_out=cell(4,4);
+final_out=cell(1,4);
 % figures
 % f1 = figure('visible', 'off');
 % f2 = figure('visible', 'off');
@@ -247,28 +247,49 @@ k =1;
 %     plot_in = cell(1,1); med_in = cell(1,1);
 %     pid = 0;
     test_fields = {'v_amp_1'; 'peak1';'tdev2_all'; 'peakmax'};
-
+    c3 = [1 2; 1 3; 1 4; 2 3; 2 4; 3 4];
     for idx = 1:size(test_fields,1)
 %         subplot(sub_x, sub_y, idx)
         % Remove 0s from data
         testdata_in{1} = test_out(o).(test_fields{idx});
         testdata_in{1}(testdata_in{1}==0)=nan;
+        SWT = zeros(1,1); KSL = zeros(1,1);
+
+        A = test_out(o).(test_fields{idx});
+        A(A==0)=nan;
         
         [P,T,STATS] = kruskalwallis(testdata_in{1},[],'off');
         
         if P<0.05
-            [MCT,VALS]=multcompare(STATS, 'CType', test_type ,'display','off');
-                        
+%             [MCT,VALS]=multcompare(STATS, 'CType', test_type ,'display','off');
+            MCT=nan(6,1);
+            for j= 1:size(c3,1)
+                [~,MCT(j),~] = ttest2(A(:,c3(j,1)), A(:,c3(j,2)));
+            end
+            
             E2 = T{2,5}/((sum(STATS.n)^2-1)/(sum(STATS.n)+1));
             ETA2 = (T{2,5}-numel(STATS.n)+1)/(sum(STATS.n)-numel(STATS.n));
             test_stats_pop(o).(test_fields{idx}).P = P;
             test_stats_pop(o).(test_fields{idx}).T = T;
             test_stats_pop(o).(test_fields{idx}).STATS = STATS;
             test_stats_pop(o).(test_fields{idx}).MCT = MCT;
-            test_stats_pop(o).(test_fields{idx}).VALS = VALS;
+%             test_stats_pop(o).(test_fields{idx}).VALS = VALS;
             test_stats_pop(o).(test_fields{idx}).EPSI2 = E2;
             test_stats_pop(o).(test_fields{idx}).ETA2 = ETA2;
-            final_out{o}(:,idx)=MCT(:,end);
+            [~,~,~,test_stats_pop(o).(test_fields{idx}).FDR] = fdr_bh(MCT(:,end));
+            test_stats_pop(o).(test_fields{idx}).BROWN = vartestn(testdata_in{1},...
+                'testtype', 'BrownForsythe', 'display', 'off');
+            
+            for idx2 = 1:4
+                N_temp=normalitytest(A(~isnan(A(:,idx2))'));
+                SWT(idx2) = N_temp(6,2);
+                KSL(idx2) = N_temp(1,2);
+            end
+            test_stats_pop(o).(test_fields{idx}).SHAPIRO = SWT;
+            test_stats_pop(o).(test_fields{idx}).KSL = KSL;
+
+            
+            final_out{o}(:,idx)=test_stats_pop(o).(test_fields{idx}).FDR;
         end
         k = k+1;
        
