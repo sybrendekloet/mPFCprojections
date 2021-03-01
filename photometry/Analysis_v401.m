@@ -60,7 +60,7 @@ dev = 0; % Deviation criterion. 0 = no selection (default). Other inputs = only 
 % This allows selection of only trials where population is active (not
 % recommended when unfamiliar with the data and collection process).
 
-[data_in, meta_in] = classify_FPdata(c2, norm, dev);
+[data_in, meta_in] = classify_FPdata(c3, norm, dev);
 
 
 %% Behavioral analysis
