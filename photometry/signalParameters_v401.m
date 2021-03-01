@@ -280,13 +280,13 @@ k =1;
             test_stats_pop(o).(test_fields{idx}).BROWN = vartestn(testdata_in{1},...
                 'testtype', 'BrownForsythe', 'display', 'off');
             
-            for idx2 = 1:4
-                N_temp=normalitytest(A(~isnan(A(:,idx2))'));
-                SWT(idx2) = N_temp(6,2);
-                KSL(idx2) = N_temp(1,2);
-            end
-            test_stats_pop(o).(test_fields{idx}).SHAPIRO = SWT;
-            test_stats_pop(o).(test_fields{idx}).KSL = KSL;
+%            for idx2 = 1:4
+%                N_temp=normalitytest(A(~isnan(A(:,idx2))'));
+%                SWT(idx2) = N_temp(6,2);
+%                KSL(idx2) = N_temp(1,2);
+%            end
+%            test_stats_pop(o).(test_fields{idx}).SHAPIRO = SWT;
+%            test_stats_pop(o).(test_fields{idx}).KSL = KSL;
 
             
             final_out{o}(:,idx)=test_stats_pop(o).(test_fields{idx}).FDR;
