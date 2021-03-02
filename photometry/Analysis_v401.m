@@ -84,7 +84,7 @@ dev = 0; % Deviation criterion. 0 = no selection (default). Other inputs = only 
 % Compares signal parameters between populations and outcomes. These data
 % are shown in Figures 4H-M.
 
-[test_out,test_stats_pop, final_out] = signalParameters(data_in, meta_in);
+[test_out,test_stats_pop, final_out] = signalParameters_v401(data_in, meta_in);
 
 
 %% Population activity DURING ITI
